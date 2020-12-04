@@ -26,7 +26,7 @@ for (const passport of input) {
 console.log(validPassports)
 
 // Part 2
-let stricterPasswords = 0;
+let stricterPassports = 0;
 for (const passport of input) {
 	const byr = passport.find(cred => cred.match(/byr:(19[2-9]\d|2000|2001|2002)$/))
 	const iyr = passport.find(cred => cred.match(/iyr:(201\d|2020)$/))
@@ -51,7 +51,7 @@ for (const passport of input) {
 	// console.table({byr, iyr, eyr, hgt, hcl, ecl, pid})
 
 	if (byr && iyr && eyr && hgt && hcl && ecl && pid) {
-		stricterPasswords++
+		stricterPassports++
 	}
 }
-console.log(stricterPasswords)
+console.log(stricterPassports)
