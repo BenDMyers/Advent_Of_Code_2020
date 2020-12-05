@@ -66,9 +66,10 @@ const highestSeat = boardingPasses.reduce((highestSeatId, boardingPass) => {
 
 console.log(highestSeat);
 
-// Part 1 - Optimized
+// Part 1 - An O(n log n) approach
 // The IDs are constructed so the backmost row will *always* have the highest IDs, and within the backmost row, the rightmost seat
 // will have the highest ID. So that seat is the *only* seat we need to check.
+// Sorting is likely `O(n log n)`, which is a higher runtime complexity than the `O(n)` from the original solution
 function bySeatingOrder(seatA, seatB) {
 	const seatAVertical = seatA.substring(0, 7); // first 7 characters
 	const seatAHorizontal = seatA.substring(7); // last (3) characters
