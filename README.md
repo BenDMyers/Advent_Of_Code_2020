@@ -2,6 +2,8 @@
 
 [**Advent of Code**](https://adventofcode.com) is a yearly event where coding challenges are published every day in December leading up to Christmas. Each day's challenges consist of two parts. These coding challenges get progressively harder each day, and solving them efficiently usually requires an understanding of data structures and algorithms.
 
+I'm putting all of my solutions up as I complete them, along with a README that shares my thought process and what I learned.
+
 ***
 
 ## Running the code
@@ -25,8 +27,30 @@ node 07
 
 ## See my solutions
 
-* [Day 1](/01/)
-* [Day 2](/02/)
-* [Day 3](/03/)
-* [Day 4](/04/)
-* [Day 5](/05/)
+| Day | Takeways |
+|-----|----------|
+| [Day 1](/01/) | Refactoring nested for-loops to recursion |
+| [Day 2](/02/) | Regexes with named capturing groups |
+| [Day 3](/03/) | Using modulo to simulate repeating patterns |
+| [Day 4](/04/) | `RegExp` and debugging regexes with named capturing groups |
+| [Day 5](/05/) | Runtime complexity with presorting |
+| Day 6 | |
+| Day 7 | |
+| Day 8 | |
+| Day 9 | |
+| Day 10 | |
+| Day 11 | |
+| Day 12 | |
+| Day 13 | |
+| Day 14 | |
+| Day 15 | |
+| Day 16 | |
+| Day 17 | |
+| Day 18 | |
+| Day 19 | |
+| Day 20 | |
+| Day 21 | |
+| Day 22 | |
+| Day 23 | |
+| Day 24 | |
+| Day 25 | |
