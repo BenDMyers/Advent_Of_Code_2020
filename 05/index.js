@@ -66,6 +66,29 @@ const highestSeat = boardingPasses.reduce((highestSeatId, boardingPass) => {
 
 console.log(highestSeat);
 
+// Part 1 - Optimized
+// The IDs are constructed so the backmost row will *always* have the highest IDs, and within the backmost row, the rightmost seat
+// will have the highest ID. So that seat is the *only* seat we need to check.
+function bySeatingOrder(seatA, seatB) {
+	const seatAVertical = seatA.substring(0, 7); // first 7 characters
+	const seatAHorizontal = seatA.substring(7); // last (3) characters
+	const seatBVertical = seatB.substring(0, 7); // first 7 characters
+	const seatBHorizontal = seatB.substring(7); // last (3) characters
+
+	let rowComparison = seatAVertical.localeCompare(seatBVertical);
+	if (rowComparison) {
+		return rowComparison;
+	} else {
+		// Flipping the order because we want `R` to come before `L`
+		return seatBHorizontal.localeCompare(seatAHorizontal);
+	}
+}
+const sortedPasses = [...boardingPasses].sort(bySeatingOrder);
+const farBackRightSeat = sortedPasses[0];
+const farBackRightId = getSeatId(farBackRightSeat);
+console.log(farBackRightId);
+
+
 
 // Part 2
 const occupiedSeats = [];
@@ -76,3 +99,14 @@ boardingPasses.forEach(pass => occupiedSeats.push(getSeatId(pass))); // track wh
 // That'll be an ID where ID + 1 *does not exist*, but ID + 2 does
 const leftNeighbor = occupiedSeats.find((seatId) => (!occupiedSeats.includes(seatId + 1) && occupiedSeats.includes(seatId + 2)));
 console.log(leftNeighbor + 1);
+
+
+// Part 2 - Optimized
+const sortedIds = boardingPasses.map(getSeatId).sort((a, z) => a-z);
+for (let i = 0; i < sortedIds.length - 1; i++) {
+	const currentId = sortedIds[i];
+	if (sortedIds[i + 1] === currentId + 2) {
+		console.log(currentId + 1);
+		break;
+	}
+}
