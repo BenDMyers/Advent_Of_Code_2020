@@ -65,3 +65,14 @@ const highestSeat = boardingPasses.reduce((highestSeatId, boardingPass) => {
 }, 0);
 
 console.log(highestSeat);
+
+
+// Part 2
+const occupiedSeats = [];
+boardingPasses.forEach(pass => occupiedSeats.push(getSeatId(pass))); // track which seats are taken
+
+// Problem specifies that our seat WILL have an occupied seat with an ID of 1 lower, and an occupied seat of ID 1 higher
+// Turning that on its head, we can try to find the *lower* of those occupied seats.
+// That'll be an ID where ID + 1 *does not exist*, but ID + 2 does
+const leftNeighbor = occupiedSeats.find((seatId) => (!occupiedSeats.includes(seatId + 1) && occupiedSeats.includes(seatId + 2)));
+console.log(leftNeighbor + 1);
