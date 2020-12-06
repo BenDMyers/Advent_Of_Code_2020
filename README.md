@@ -34,7 +34,7 @@ node 07
 | [Day 3](/03/) | Using modulo to simulate repeating patterns |
 | [Day 4](/04/) | `RegExp` and debugging regexes with named capturing groups |
 | [Day 5](/05/) | Runtime complexity with presorting |
-| Day 6 | |
+| [Day 6](/06/) | |
 | Day 7 | |
 | Day 8 | |
 | Day 9 | |
