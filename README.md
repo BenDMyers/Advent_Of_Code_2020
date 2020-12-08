@@ -35,7 +35,7 @@ node 07
 | [Day 4](/04/) | `RegExp` and debugging regexes with named capturing groups |
 | [Day 5](/05/) | Runtime complexity with presorting |
 | [Day 6](/06/) | `Set` |
-| Day 7 | |
+| [Day 7](/07/) | Lookup tables, memoization |
 | Day 8 | |
 | Day 9 | |
 | Day 10 | |
