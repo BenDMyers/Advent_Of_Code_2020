@@ -29,8 +29,10 @@ let validPositionalPasswords = 0;
 for (let i = 0; i < lines.length; i++) {
 	const {groups} = lines[i];
 	const {leftBound, rightBound, requiredLetter, password} = groups;
+	const atFirstIndex = password[leftBound - 1] === requiredLetter;
+	const atSecondIndex = password[rightBound - 1] === requiredLetter;
 
-	if ((password[leftBound - 1] === requiredLetter) ^ (password[rightBound - 1] === requiredLetter)) {
+	if (atFirstIndex ^ atSecondIndex) {
 		validPositionalPasswords++;
 	}
 }
