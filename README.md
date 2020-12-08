@@ -36,7 +36,7 @@ node 07
 | [Day 5](/05/) | Runtime complexity with presorting |
 | [Day 6](/06/) | `Set` |
 | [Day 7](/07/) | Lookup tables, memoization |
-| Day 8 | |
+| [Day 8](/08/) | Control flow and mutations |
 | Day 9 | |
 | Day 10 | |
 | Day 11 | |
