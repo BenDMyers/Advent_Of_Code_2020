@@ -37,7 +37,7 @@ node 07
 | [Day 6](/06/) | `Set` |
 | [Day 7](/07/) | Lookup tables, memoization |
 | [Day 8](/08/) | Control flow and mutations |
-| Day 9 | |
+| [Day 9](/09/) | |
 | Day 10 | |
 | Day 11 | |
 | Day 12 | |
