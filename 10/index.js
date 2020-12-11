@@ -6,7 +6,6 @@ const input = fs
 	.sort((a, b) => a - b);
 
 input.unshift(0);
-input.push(input[input.length - 1] + 3);
 
 // Part 1
 let oneJoltDifferenceCount = 0;
@@ -21,17 +20,19 @@ for (let adapterRating of input) {
 	if (difference === 3) threeJoltsDifferenceCount++;
 }
 
-console.log(
-	oneJoltDifferenceCount,
-	threeJoltsDifferenceCount,
-	oneJoltDifferenceCount * threeJoltsDifferenceCount
-);
+console.log(oneJoltDifferenceCount * threeJoltsDifferenceCount);
 
 
 // Part 2
 let target = input[input.length - 1];
 const memoizedPaths = {};
 
+/**
+ * [Memoized] Finds how many different chains you could make with this adapter that get you to the largest adapter.
+ * Adapters in a chain must go up by +1, +2, or +3 at a time.
+ * @param {number} adapter the joltage rating for a given adapter
+ * @returns {number} count of successful chains that can be made with this adapter
+ */
 function getChains(adapter) {
 	if (adapter === target) {
 		return 1;

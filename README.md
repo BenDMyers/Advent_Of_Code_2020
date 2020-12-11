@@ -38,7 +38,7 @@ node 07
 | [Day 7](/07/) | Lookup tables, memoization |
 | [Day 8](/08/) | Control flow and mutations |
 | [Day 9](/09/) | Queues |
-| [Day 10](/10/) | |
+| [Day 10](/10/) | Memoization |
 | Day 11 | |
 | Day 12 | |
 | Day 13 | |
