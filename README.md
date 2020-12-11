@@ -39,7 +39,7 @@ node 07
 | [Day 8](/08/) | Control flow and mutations |
 | [Day 9](/09/) | Queues |
 | [Day 10](/10/) | Memoization |
-| [Day 11](/11/) | |
+| [Day 11](/11/) | Cellular automata |
 | Day 12 | |
 | Day 13 | |
 | Day 14 | |

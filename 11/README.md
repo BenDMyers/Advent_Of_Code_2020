@@ -1,161 +1,148 @@
-# [Day 10](https://adventofcode.com/2020/day/10)
+# [Day 11](https://adventofcode.com/2020/day/11)
 
-Day 10's input file is a list of numbers, each representing a "joltage" adapter. Each adapter can be chained to an adapter with a joltage rating 1, 2, or 3 higher. For instance, if you have an adapter rated `3`, the next adapter in the chain must be a `4`, `5`, or `6`.
+Day 11's input is a grid of characters, representing a seating chart, which resembles
 
-**Part 1** asks you to chain *all* of the adapters together. It then asks you to count how many times the joltage went up by 1 and how many times it went up by 3, and to multiply those two numbers together. **Part 2** asks you to find how many possible chains get you from your lowest joltage adapter up to your highest joltage adapter.
-
-## Part 1: Presorting
-
-Part 1 asks you to chain every adapter together. Because each link in the chain can only increase in joltage, we have to go through each of them in order, from least to greatest voltage. The easiest way to do this is to sort the input array in numerical order before trying to iterate through it. I'm leaning on [Node.js's native quicksort-based `sort()` implementation](https://blog.shovonhasan.com/time-space-complexity-of-array-sort-in-v8/), which has a loglinear average runtime complexity (`Θ(n log n)`).
-
-Once the array is sorted, the solution boiled down to iterating over the array of adapter ratings, comparing each rating to the one before it. If the difference was 1, that was a tally for `oneJoltDifferenceCount`. If the difference was 3, that tally went to `threeJoltsDifferenceCount`.
-
-```js
-let oneJoltDifferenceCount = 0;
-let threeJoltsDifferenceCount = 0;
-
-let accumulatedRating = 0;
-for (let adapterRating of input) {
-	const difference = adapterRating - accumulatedRating;
-	accumulatedRating = adapterRating;
-
-	if (difference === 1) oneJoltDifferenceCount++;
-	if (difference === 3) threeJoltsDifferenceCount++;
-}
-
-console.log(oneJoltDifferenceCount * threeJoltsDifferenceCount);
+```
+L.LL.LL.LL
+LLLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLLL
+L.LLLLLL.L
+L.LLLLL.LL
 ```
 
-## Part 2: Maybe the Real Friends Were the Memoization We Made Along the Way
+In this seating chart,
 
-I tried several different approaches to Part 2 that didn't pan out for a variety of reasons. You can see each of them in all their glory in the [graveyard of unsuccessful attempts](#graveyard-of-unsuccessful-attempts) below.
+* **`.`** represents the floor, where no one sits
+* **`L`** represents an open seat
+* **`#`** represents an occupied seat
 
-I thought pretty early that [memoization](https://en.wikipedia.org/wiki/Memoization) might be necessary — after all, the puzzle mentions that your input file, with nearly a hundred adapters, will have several *trillions* of successful combinations. That means that if you're doing any nested approach like tree-building and/or recursion, your adapters, especially the higher-joltage adapters, will end up getting checked for viable chains a few trillion times. This is tremendously inefficient, and can benefit a lot from being memoized.
+Seating charts update all at once in discrete steps, based on the following rules:
 
-I tried my hand at a recursive approach that would calculate, treelike, how many branches were valid. This... didn't work. Looking back on that attempt, it may genuinely have come down to an error where I was getting an index from one array, rather than from the full input array. Without that hindsight, though, I became thought that my *memoization* might not be working, misdiagnosing the problem, so I tried a few other things. I built a tree of nodes and fell for the same miscounting issues.
+**Part 1:**
 
-The first solution that worked with the sample inputs involved building up an array of arrays, where the inner arrays represented a given chain of adapters. While this worked for the sample set, my program choked on the full input, ending in a heap overflow. It turns out creating a few trillion arrays, each with up to nearly 100 elements, wasn't the optimal solution.
+* Empty seats (`L`) are filled (switch to `#`) if none of their adjacent neighbors in any direction are occupied (`#`)
+* Occupied seats (`#`) are vacated (switch to `L`) if at least 4 of their adjacent neighbors are also occupied (`#`)
+* Otherwise, the cell does not change
 
-I resolved to get this memoization working properly. The pivotal realization for me was when I realized I didn't so much need to count successful branches so much as count how often the last adapter was reached. That's a subtle reframing, but it helped me realize exactly why I'd been miscounting: I was handling incrementing at each adapter in the chain, where I only needed/wanted to increment at the end of the chain. I retooled my solution and reimplemented memoization, and the code ran nearly instantly.
+Rinse and repeat until the seating chart reaches equilibrium and makes no more changes.
+
+**Part 2:**
+
+Part 2 introduces a *line of sight* requirement. An occupied seat is within line of sight if it could be reached by going in a straight line along any one of the eight directions without hitting another seat first.
+
+* Empty seats (`L`) are filled (switch to `#`) if no occupied seats are within their line of sight.
+* Occupied seats (`#`) are vacated (switch to `L`) if at least 5 occupied seats are within their line of sight.
+* Otherwise, the cell does not change
+
+Like Part 1, rinse and repeat until the seating chart reaches equilibrium and makes no more changes.
+
+The grid structure and the rules for updating any given cell make this a [*cellular automaton*](https://mathworld.wolfram.com/CellularAutomaton.html). I was given the chance to play with cellular automata a bit in college, and they're super fun!
+
+## Cellular Automata and In-Place Changes
+
+One of the questions I've been asking myself every day as I go through these challenges is whether I should mutate the original input data structure, or create a clone. In this case, I landed solidly in the camp of creating a clone for each step, namely to solve one specific problem.
+
+Consider the following small seating chart:
+
+```
+....
+.LL.
+....
+```
+
+Per the rules of Part 1 listed above, both of these empty seats should be filled in the next step because neither of them currently have any occupied neighbors. Say we update the leftmost open seat accordingly:
+
+```
+....
+.#L.
+....
+```
+
+When we get to the rightmost open seat and run our adjacent occupied seat checks, we'll find the occupied seat that we just set. There's no real good way to know for sure whether that seat was already occupied or whether we set it in this step.
+
+To remedy this, I iterated over my `input` grid, calculated each cell's new value, and stuck it in the same spot in a `newSeating` variable. Because the `input` grid remained unchanged, I could each cell's new value without any knock-on effect from previous seat value calculations. After I had iterated over the entire `input` grid, I was free to reassign `input` to `newSeating` to be used in the next step.
+
+## Abstracting Line of Sight
+
+In part 2, seats fill and vacate based on occupied seats within their line of sight, not just adjacent to them. This posed a good question: what's the best way to traverse a grid in eight different directions like a chess queen, let alone stopping when you reach another seat or the edges of the grid?
+
+One way to do this is to write eight different loops, one for each direction. As you do, you track the row and column for the current cell along this direction. If you hit a `#`, you increment some `occupiedSeatsInSight` value and break the loop. If you instead hit a `L` or reach the edge, you break the loop without incrementing `occupiedSeatsInSight`. Otherwise, you move to the next cell along that direction.
+
+This is totally doable, but it requires setting up similar loops for each direction, updating the bounds checks (if you're moving northwest, you want to make sure the row and column never go below `0`, but if you're going southeast, you don't want either to go beyond the grid's length), and updating the row and column incrementing/decrementing to pick the next cell to check. It's doable, but it'll lead to code duplication, with a lot of potential for forgetting necessary changes during the copy–paste.
+
+I decided to create an abstraction around this problem, starting with a function called [`hasOccupiedSeatInLineOfSight`](/11/index.js#L83). This function takes the row and column of a cell, as well as `updateRow` and `updateColumn` functions — more on those in a moment. `hasOccupiedSeatInLineOfSight` first determines whether it is out of bounds, in which case, it returns `false`. It then checks whether this cell has an empty chair (`L`), in which case, it also returns `false`. These are the only two ways that a given line of sight could *not* have an occupied chair. Likewise, if the cell *is* an occupied seat, it returns `true`. Finally, if none of the above are true, this function recursively calls itself, but with the coordinates for the next cell along this line of sight. It uses those `updateRow` and `updateColumn` functions to get the coordinates for the next cell.
 
 ```js
-// Part 2
-let target = input[input.length - 1];
-const memoizedPaths = {};
-
 /**
- * [Memoized] Finds how many different chains you could make with this adapter that get you to the largest adapter.
- * Adapters in a chain must go up by +1, +2, or +3 at a time.
- * @param {number} adapter the joltage rating for a given adapter
- * @returns {number} count of successful chains that can be made with this adapter
+ * Recursively determines whether an occupied chair exists along a given line of sight
+ * @param {number} row the current row of whichever element we're looking at along a particular line of sight
+ * @param {number} column the current column of whichever element we're looking at along a particular line sight
+ * @param {function} updateRow function to get the row of the next element along this line of sight
+ * @param {function} updateColumn function to get the column of the next element along this line of sight
+ * @returns {boolean} whether an occupied chair is within this line of sight
  */
-function getChains(adapter) {
-	if (adapter === target) {
-		return 1;
-	} else if (memoizedPaths[adapter] !== undefined) {
-		return memoizedPaths[adapter];
-	}
+function hasOccupiedSeatInLineOfSight(row, column, updateRow, updateColumn) {
+	let rowOutOfBounds = row < 0 || row >= input2.length;
+	let columnOutOfBounds = column < 0 || column >= input[0].length;
 
-	const nextAdapterCandidates = input.filter(next => (next > adapter && next <= adapter + 3));
-	const successfulBranches = nextAdapterCandidates.reduce((sum, candidate) => {
-		return sum + getChains(candidate);
-	}, 0);
-	memoizedPaths[adapter] = successfulBranches;
-	return successfulBranches;
+	if (rowOutOfBounds || columnOutOfBounds) return false;
+	if (input2[row][column] === 'L') return false;
+	if (input2[row][column] === '#') return true;
+
+	return hasOccupiedSeatInLineOfSight(updateRow(row), updateColumn(column), updateRow, updateColumn);
 }
-
-getChains(0);
-console.log(memoizedPaths[0]);
 ```
 
-### Graveyard of Unsuccessful Attempts
-
-Saved for posterity.
-
-#### First approach at memoization
+Let's say that we wanted to check whether any occupied seats were in our line of sight to the northeast, assuming we're currently in row `r` and column `c`. Because we're looking to the north, each cell along the line of sight decrements its row, so we can use the `updateRow` function `row => row - 1`. Because we're looking eastward, each cell along the line of sight increments its column, so we can use the `updateColumn` function `column => column + 1`:
 
 ```js
-let memoizedBranches = {};
-function getSuccessfulBranches(adapter, index) {
-	if (memoizedBranches[index] !== undefined) {
-		return memoizedBranches[index];
-	} else if (index === input.length - 1) {
-		return 1;
-	}
-
-	const candidates = input.slice(index + 1, index + 4);
-
-	let totalBranches = 0;
-	if (candidates.includes(adapter + 1)) {
-		totalBranches += getSuccessfulBranches(adapter + 1, candidates.indexOf(adapter + 1));
-	}
-	if (candidates.includes(adapter + 2)) {
-		totalBranches += getSuccessfulBranches(adapter + 2, candidates.indexOf(adapter + 2));
-	}
-	if (candidates.includes(adapter + 3)) {
-		totalBranches += getSuccessfulBranches(adapter + 3, candidates.indexOf(adapter + 3));
-	}
-
-	memoizedBranches[index] = (totalBranches > 0) ? totalBranches + 1 : totalBranches;
-	return (totalBranches > 0) ? totalBranches + 1 : totalBranches;
-}
-
-const successfulBranches = getSuccessfulBranches(0, 0);
+// This determines whether any seats are occupied within our line of sight to the northeast
+hasOccupiedSeatInLineOfSight(r - 1, c + 1, row => row - 1, column => column + 1);
 ```
 
-**Why it didn't work:** Getting the index of the next adapters from `candidates`, instead of the original `input` array. Trying to add 1 to the branch count at the last hour for... reasons?
-
-#### Tree assembly
+We can abstract those row/column updaters into descriptively named helper functions:
 
 ```js
-let root = {index: 0, value: 0};
+const up = r => r - 1;
+const down = r => r + 1;
+const left = c => c - 1;
+const right = c => c + 1;
+const noop = x => x;
 
-function expandNode(adapter, tree) {
-	console.table({adapter})
-	if (adapter === input[input.length - 1]) return 1;
-
-	let successfulPaths = 0;
-	const nextAdapterCandidates = input.filter(next => (next > adapter && next <= adapter + 3));
-	console.log(JSON.stringify(tree), JSON.stringify(nextAdapterCandidates))
-	nextAdapterCandidates.forEach(candidate => {
-		const downstreamBranches = expandNode(candidate, [...tree, adapter]);
-		if (downstreamBranches > -1) {
-			successfulPaths += downstreamBranches;
-		}
-	});
-	return successfulPaths - 1;
-}
-
-console.log(expandNode(0, []))
+// This determines whether any seats are occupied within our line of sight to the northeast
+hasOccupiedSeatInLineOfSight(r - 1, c + 1, up, right);
 ```
 
-**Why this didn't work:** In my haste to avoid any off-by-one errors, I prematurely subtracted 1 leading to many (read: all) successful branches being discounted.
-
-#### Generating arrays for each successful chain
+This `hasOccupiedSeatInLineOfSight` function is helpful, but it only tells us that an occupied seat was spied in one direction. We want to find how many directions that's true for given a certain cell. For this we have [`getOccupiedSeatsWithinLineOfSight`](/11/index.js#L108)
 
 ```js
-let target = input[input.length - 1];
+/**
+ * Gets the number of occupied (`#`) seats within a given seat's line of sight in all 8 directions
+ * @param {number} row row of the current seat
+ * @param {number} column column of the current seat
+ * @returns {number} the number of occupied seats within this seat's line of sight
+ */
+function getOccupiedSeatsWithinLineOfSight(row, column) {
+	let occupiedSeatsInSight = 0;
 
-function getChains(adapter) {
-	if (adapter === target) return [[adapter]];
+	if (hasOccupiedSeatInLineOfSight(row - 1,	column - 1, 	up,		left))		occupiedSeatsInSight++;		// Northwest
+	if (hasOccupiedSeatInLineOfSight(row - 1,	column, 		up, 	noop))		occupiedSeatsInSight++;		// North
+	if (hasOccupiedSeatInLineOfSight(row - 1,	column + 1,		up, 	right))		occupiedSeatsInSight++;		// Northeast
 
-	const nextAdapterCandidates = input.filter(next => (next > adapter && next <= adapter + 3));
+	if (hasOccupiedSeatInLineOfSight(row,		column - 1,		noop, 	left))		occupiedSeatsInSight++;		// West
+	if (hasOccupiedSeatInLineOfSight(row,		column + 1,		noop, 	right))		occupiedSeatsInSight++;		// East
 
-	let chains = [];
-	for (let candidate of nextAdapterCandidates) {
-		let candidateChains = getChains(candidate);
-		if (Array.isArray(candidateChains)) {
-			candidateChains.forEach(chain => {
-				chains.push([adapter, ...chain])
-			});
-		}
-	}
+	if (hasOccupiedSeatInLineOfSight(row + 1,	column - 1,		down, 	left))		occupiedSeatsInSight++;		// Southwest
+	if (hasOccupiedSeatInLineOfSight(row + 1,	column,			down, 	noop))		occupiedSeatsInSight++;		// South
+	if (hasOccupiedSeatInLineOfSight(row + 1,	column + 1,		down, 	right))		occupiedSeatsInSight++;		// Southeast
 
-	if (chains.length) return chains;
+	return occupiedSeatsInSight;
 }
-
-const validChains = getChains(0);
-console.log(validChains.length);
 ```
 
-**Why it didn't work:** This created several trillion arrays, each up to nearly 100 elements long, so the program quit due to a heap error. Super inefficient.
+With this function in place, we finally have a way to determine how many occupied cells are within sight of any given cell, and a way that I personally find a little easier to eyeball. 🎉
