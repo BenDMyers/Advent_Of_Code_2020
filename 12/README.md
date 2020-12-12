@@ -104,7 +104,7 @@ TypeError: (intermediate value)(intermediate value)(intermediate value)(intermed
 
 I decided to google the error message. The first response was a [Stack Overflow question about IIFEs](https://stackoverflow.com/questions/42036349/uncaught-typeerror-intermediate-value-is-not-a-function), which seemed promising. There, Stack Overflow user Josh Cozier breaks down the problem:
 
-* The first IIFE is evaluated an returns a value (in my case, `undefined`)
+* The first IIFE is evaluated and returns a value (in my case, `undefined`)
 * JavaScript reaches the second IIFE, but interprets it as an invocation of the first IIFE's value, so it tries to do `undefined(function part2() { … })`. This, understandably, doesn't work.
 
 The way to fix this is by making sure that Part 1's IIFE has a semicolon at the end, marking the end of the expression. This is one of the few times in JavaScript where the semicolon is nonoptional.
