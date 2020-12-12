@@ -1,6 +1,7 @@
-const { log } = require('console');
 const fs = require('fs');
-const input = fs.readFileSync(`${__dirname}/.input`, 'utf-8').split('\n')
+const input = fs
+	.readFileSync(`${__dirname}/.input`, 'utf-8')
+	.split('\n');
 
 const cardinalDirections = {0: 'E', 90: 'N', 180: 'W', 270: 'S'};
 

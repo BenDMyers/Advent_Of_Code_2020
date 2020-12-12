@@ -40,7 +40,7 @@ node 07
 | [Day 9](/09/) | Queues |
 | [Day 10](/10/) | Memoization |
 | [Day 11](/11/) | Cellular automata |
-| Day 12 | |
+| [Day 12](/12/) | Rotating a point on a Cartesian plane, IIFEs |
 | Day 13 | |
 | Day 14 | |
 | Day 15 | |
