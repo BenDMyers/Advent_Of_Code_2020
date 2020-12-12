@@ -27,7 +27,7 @@ node 07
 
 ## See my solutions
 
-| Day | Takeways |
+| Day | Takeaways |
 |-----|----------|
 | [Day 1](/01/) | Refactoring nested for-loops to recursion |
 | [Day 2](/02/) | Regexes with named capturing groups |
