@@ -58,7 +58,7 @@ const input = fs
 		return alignmentTime % BigInt(intervalProduct);
 	}
 
-	/** @type {{interval: number, index: number}[]} */
+	/** @type {{interval: BigInt, index: BigInt}[]} */
 	const buses = input[1]
 		.split(',')
 		.reduce((scheduledBuses, bus, index) => {
