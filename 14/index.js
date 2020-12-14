@@ -25,8 +25,6 @@ const assignmentRegex = /^mem\[(?<address>(\d+))\] = (?<value>\d+)$/;
 			}
 		}
 
-		// let decimal = parseInt(maskedValue, 2);
-		// console.table({bitmask, binaryValue, maskedValue, decimal})
 		return parseInt(maskedValue, 2);
 	}
 
@@ -51,5 +49,53 @@ const assignmentRegex = /^mem\[(?<address>(\d+))\] = (?<value>\d+)$/;
 
 // Part 2
 (function part2() {
-	
+	const memory = {};
+	let bitmask = '';
+
+	function maskAddress(address) {
+		const binaryAddress = address
+			.toString(2)
+			.padStart(bitmask.length, '0');
+
+		let maskedAddress = '';
+		for (let i = 0; i < binaryAddress.length; i++) {
+			if (bitmask[i] === '0') {
+				maskedAddress += binaryAddress[i];
+			} else {
+				maskedAddress += bitmask[i];
+			}
+		}
+
+		return maskedAddress;
+	}
+
+	/**
+	 * 
+	 * @param {string} maskedAddress 
+	 */
+	function getFloatingAddresses(maskedAddress) {
+		if (!maskedAddress.includes('X')) return [maskedAddress];
+		else return [
+			...getFloatingAddresses(maskedAddress.replace('X', '0')),
+			...getFloatingAddresses(maskedAddress.replace('X', '1')),
+		];
+	}
+
+	for (const line of input) {
+		const bitmaskMatch = line.match(bitmaskRegex);
+		const assignmentMatch = line.match(assignmentRegex);
+
+		if (bitmaskMatch) {
+			const {newBitmask} = bitmaskMatch.groups;
+			bitmask = newBitmask;
+		} else if (assignmentMatch) {
+			const {address, value} = assignmentMatch.groups;
+			let maskedAddress = maskAddress(parseInt(address));
+			let floatingAddresses = getFloatingAddresses(maskedAddress);
+			floatingAddresses.forEach(addr => memory[addr] = Number(value));
+		}
+	}
+
+	let writtenValues = Object.values(memory).reduce((a, b) => a + b);
+	console.log(writtenValues);
 })();
