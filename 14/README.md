@@ -63,11 +63,18 @@ function getFloatingAddresses(maskedAddress) {
 The call chain for getting all addresses corresponding to `X10X` is:
 
 * `getFloatingAddresses('X10X')`
-	* `getFloatingAddresses('010X')`
-		* `getFloatingAddresses('0100')`
-		* `getFloatingAddresses('0101')`
-	* `getFloatingAddresses('110X')`
-		* `getFloatingAddresses('1100')`
-		* `getFloatingAddresses('1101')`
+	* Calls `getFloatingAddresses('010X')`
+		* Calls `getFloatingAddresses('0100')`
+			* Returns `['0100']`
+		* Calls `getFloatingAddresses('0101')`
+			* Returns `['0101']`
+		* Returns `['0100', '0101']`
+	* Calls `getFloatingAddresses('110X')`
+		* Calls `getFloatingAddresses('1100')`
+			* Returns `['1100']`
+		* Calls `getFloatingAddresses('1101')`
+			* Returns `['1101']`
+		* Returns `['1100', '1101']`
+	* Returns `['0100', '0101', '1100', '1101']`
 
 Those addresses are then collated into a single array that can be iterated over.
