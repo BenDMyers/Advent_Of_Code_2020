@@ -43,7 +43,7 @@ node 07
 | [Day 12](/12/) | Rotating a point on a Cartesian plane, IIFEs |
 | [Day 13](/13/) | Chinese Remainder Theorem, BigInts |
 | [Day 14](/14/) | Quasi-bitstrings, recursive permutations |
-| [Day 15](/15/) | |
+| [Day 15](/15/) | `Map` for memoization |
 | Day 16 | |
 | Day 17 | |
 | Day 18 | |
