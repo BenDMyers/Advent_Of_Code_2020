@@ -72,6 +72,7 @@ I had a hunch that object lookup might not be as fast as I had thought, and that
 I was encouraged by the following entry in [MDN's `Map` docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map):
 
 | | Map | Object |
+|-|-----|--------|
 | **Performance** | Performs better in scenarios involving frequent additions and removals of key-value pairs. | Not optimized for frequent additions and removals of key-value pairs. |
 
 That _frequent_ is the key word here. Objects might have constant-time lookup, but that'll still be slower than `Map`'s lookup if you're frequently adding new properties. This clarifies a huge question I'd had about `Map`s, which is what their use case was if JavaScript already supports objects.
