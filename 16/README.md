@@ -88,3 +88,148 @@ Sketching out the array operations and other loops in each of my solutions, I ge
 This is a lot of loops and array operations, many of which iterate through the same elements, and I'm confident this could be tightened up and made more efficient. I might play around with that another time.
 
 ## Solving Logic Puzzles Programmatically
+
+I thought Part 2 was super fun! The key element of this puzzle is figuring out which rules apply to which ticket fields, sort of like solving a logic puzzle. The question is… how do you write _code_ to solve a logic puzzle like this?
+
+My first approach to solving this looked like:
+
+```js
+let ruleOrder = new Array(rules.length);
+
+for (let ticket = 0; ticket < validTickets.length; ticket++) {
+	let fields = validTickets[ticket].split(',').map(num => Number(num));
+	for (let field = 0; field < fields.length; field++) {
+		let fieldValue = fields[field];
+		let applicableRules = rules.filter(({range1Start, range1End, range2Start, range2End}) => (range1Start <= fieldValue && fieldValue <= range1End) || (range2Start <= fieldValue && fieldValue <= range2End));
+		console.log(field, fieldValue, applicableRules)
+		if (applicableRules.length === 1) { // This field could only ever apply to this one rule
+			ruleOrder[field] = applicableRules[0].ruleName;
+		}
+	}
+	console.log(ruleOrder)
+}
+```
+
+In summary, this approach iterates over each field, and if only one rule could apply, that rule is put in its respective index in the `ruleOrder` array. What I learned, however, is that it's completely possible for the rules and fields to be written such that for any given field, multiple rules *could* apply. A working solution really needed to consider which rules were applicable to the other fields. Back to the drawing board.
+
+Instead of adding rules to the `ruleOrder` array when I was certain that's where they belonged, I decided to **disqualify** rules when I was certain they _didn't_ apply.
+
+Let's consider the provided example:
+
+```
+class: 0-1 or 4-19
+row: 0-5 or 8-19
+seat: 0-13 or 16-19
+
+nearby tickets:
+3,9,18
+15,1,5
+5,14,9
+```
+
+Before we start iterating through the nearby tickets, the three rules (`class`, `row`, and `seat`) could be in any order. I initalized an array that would duplicate my `rules` array `rules.length` times to reflect this uncertainty.
+
+```
+[
+	[class, row, seat],
+	[class, row, seat],
+	[class, row, seat]
+]
+```
+
+Then, I iterated through the tickets. As I iterated through the tickets, I internally iterated through each of their fields, disqualifying any rules that weren't applicable. For instance, say we start with that first nearby ticket, `3,9,18`. `3` is out of range for the `class` rule, but it's in range for `row` and `seat`. `9` could be in any of the three rules' ranges, so no disqualification here. `18` could likewise be in any of the three rules, so no disqualification here. After the first ticket, my `ruleOrder` array looked like
+
+```
+[
+	[row, seat],
+	[class, row, seat],
+	[class, row, seat]
+]
+```
+
+In the second ticket, `15,1,5`, the `15` is out of the range of `seat`, and the `1` and `5` don't disqualify any of the rules.
+
+```
+[
+	[row],
+	[class, row, seat],
+	[class, row, seat]
+]
+```
+
+In the final ticket, `5,14,9`, the `5` doesn't disqualify any rules, but we already know by now that the first rule has to be `row` anyways. `14` disqualifies the `seat` rule. `9` doesn't disqualify any rules.
+
+At the end of the tickets provided in the input file, we're left with
+
+```
+[
+	[row],
+	[class, row],
+	[class, row, seat]
+]
+```
+
+That's as much information as the input file can give us. We now need to use what we have and start consolidating our rules. First off, we know that `row` has to be the first rule. We can now eliminate `row` from all other fields' rule candidates:
+
+```
+[
+	[row],
+	[class],
+	[class, seat]
+]
+```
+
+After consolidating `row`, we can see that the second rule has to be `class`, so we consolidate `class` candidates:
+
+```
+[
+	[row],
+	[class],
+	[seat]
+]
+```
+
+At this point, each array within `ruleOrder` has exactly one element, so we know we've landed on the final rule order 🙌🏻
+
+We can take this approach and generalize it:
+
+1. **First, assume any rule could be in any spot.** I accomplished this by creating an array of `rules` clones: `let ruleOrder = rules.map(() => [...rules]);`
+
+2. **Iterate through the input tickets, and disqualify as many rules as you can.**
+```js
+// Rule out certain rules for certain fields using nearby tickets
+for (let ticket = 0; ticket < validTickets.length; ticket++) {
+	let fields = validTickets[ticket].split(',');
+	for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
+		let field = Number(fields[fieldIndex]);
+
+		// Perform disqualification
+		ruleOrder[fieldIndex] = ruleOrder[fieldIndex].filter((rule) => {
+			const {range1Start, range1End, range2Start, range2End} = rule;
+			return (range1Start <= field && field <= range1End) || (range2Start <= field && field <= range2End);
+		});
+	}
+}
+```
+
+3. **As long as any rules have not been locked in, consolidate by removing locked-in rules as candidates for other fields.**
+```js
+// Dedupe and apply remaining logic puzzle... logic
+while (ruleOrder.some(fieldRules => fieldRules.length > 1)) {
+	// Find which rules have already been locked in
+	const lockedInRules = ruleOrder.filter(fieldRules => fieldRules.length === 1).map(fieldRule => fieldRule[0].ruleName);
+
+	ruleOrder = ruleOrder.map((fieldRules) => {
+		if (fieldRules.length > 1) {
+			// Remove any rules which are already locked in
+			return fieldRules.filter(rule => !lockedInRules.includes(rule.ruleName));
+		} else {
+			return fieldRules;
+		}
+	});
+}
+```
+
+Once you have the final rule order, you can use it to get the `departure` rules and multiply those fields from your ticket together.
+
+If you hadn't guessed, I had a lot of fun with that one.
