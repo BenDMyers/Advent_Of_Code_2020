@@ -1,6 +1,6 @@
 # [Day 16](https://adventofcode.com/2020/day/16)
 
-Day 17's input is broken up into three sections: rules, *your* ticket, and a list of nearby tickets. Tickets are comma-separated lists of numbers, corresponding to the provided rules.
+Day 16's input is broken up into three sections: rules, *your* ticket, and a list of nearby tickets. Tickets are comma-separated lists of numbers, corresponding to the provided rules.
 
 ```
 class: 0-1 or 4-19
