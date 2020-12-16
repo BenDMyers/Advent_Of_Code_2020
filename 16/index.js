@@ -78,7 +78,7 @@ const ruleRegex = /^(?<ruleName>[\w\s]*): (?<range1Start>\d+)-(?<range1End>\d+) 
 		}
 	}
 
-	// Dedupe and apply remain logic puzzle... logic
+	// Dedupe and apply remaining logic puzzle... logic
 	while (ruleOrder.some(fieldRules => fieldRules.length > 1)) {
 		const lockedInRules = ruleOrder.filter(fieldRules => fieldRules.length === 1).map(fieldRule => fieldRule[0].ruleName);
 		ruleOrder = ruleOrder.map((fieldRules) => {
@@ -90,7 +90,7 @@ const ruleRegex = /^(?<ruleName>[\w\s]*): (?<range1Start>\d+)-(?<range1End>\d+) 
 		});
 	}
 
-	// Add up the value of the "departure" fields on your ticket
+	// Multiply the values of the "departure" fields on your ticket
 	let yourTicket = yourTicketSection.split('\n')[1].split(',').map(num => Number(num));
 	let yourDepartureFields = 1;
 

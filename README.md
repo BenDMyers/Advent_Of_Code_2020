@@ -44,7 +44,7 @@ node 07
 | [Day 13](/13/) | Chinese Remainder Theorem, BigInts |
 | [Day 14](/14/) | Quasi-bitstrings, recursive permutations |
 | [Day 15](/15/) | `Map` for memoization |
-| [Day 16](/16/) | |
+| [Day 16](/16/) | Solving logic puzzles programmatically |
 | Day 17 | |
 | Day 18 | |
 | Day 19 | |
