@@ -4,8 +4,6 @@ const input = fs
 	.split('\n')
 	.map(line => line.split(''));
 
-// console.log(input);
-
 // Part 1
 (function part1() {
 	/** @type {Object<string, {x: number, y: number, z: number}>} */
@@ -19,8 +17,6 @@ const input = fs
 			}
 		}
 	}
-
-	console.log(conwayCube);
 
 	/**
 	 * Gets how many neighboring cells of a given cell are active
@@ -105,8 +101,6 @@ const input = fs
 			}
 		}
 	}
-
-	console.log(conwayCube);
 
 	/**
 	 * Gets how many neighboring cells of a given cell are active
