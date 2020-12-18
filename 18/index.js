@@ -70,19 +70,13 @@ function replaceSubstring(original, start, end, newSubstring) {
 		// Step 2: There are no more parentheticals in this expression, so evaluate left-to-right
 		let terms = expression.split(' ');
 		let value = Number(terms[0]); // set initial value
-		let currentOperand = '';
-		for (let i = 1; i < terms.length; i++) {
-			if (terms[i] === '+') {
-				currentOperand = '+';
-			} else if (terms[i] === '*') {
-				currentOperand = '*';
+		for (let i = 2; i < terms.length; i += 2) {
+			let term = Number(terms[i]);
+			let operator = terms[i - 1];
+			if (operator === '+') {
+				value += term;
 			} else {
-				let term = Number(terms[i]);
-				if (currentOperand === '+') {
-					value += term;
-				} else {
-					value *= term;
-				}
+				value *= term;
 			}
 		}
 
