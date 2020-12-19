@@ -47,7 +47,7 @@ node 07
 | [Day 16](/16/) | Solving logic puzzles programmatically |
 | [Day 17](/17/) | Infinite 3D/4D cellular automata |
 | [Day 18](/18/) | Evaluating expressions with custom operator precedences |
-| Day 19 | |
+| [Day 19](/19/) | |
 | Day 20 | |
 | Day 21 | |
 | Day 22 | |
