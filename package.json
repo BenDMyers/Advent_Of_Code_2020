@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "2d-array-rotation": "^2.1.1",
     "generate-comparators": "^1.0.3"
   }
 }
