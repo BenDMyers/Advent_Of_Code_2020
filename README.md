@@ -50,7 +50,7 @@ node 07
 | [Day 19](/19/) | |
 | Day 20 | |
 | Day 21 | |
-| Day 22 | |
+| [Day 22](/22/) | Recursive card games |
 | Day 23 | |
 | Day 24 | |
 | Day 25 | |
