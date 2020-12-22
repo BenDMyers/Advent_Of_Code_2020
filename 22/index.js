@@ -42,7 +42,7 @@ const [player1Deck, player2Deck] = fs
 	 * Play a whole game of Recursive Combat (a take on War)
 	 * @param {number[]} player1 Player 1's deck, which may be cloned from a parent game
 	 * @param {number[]} player2 Player 2's deck, which may be cloned from a parent game
-	 * @returns {{winner: 1|2, hand: number[]}} the winner and their winning hand
+	 * @returns {1|2} the winner
 	 */
 	function playRecursiveCombat(player1, player2) {
 		/** @type {Map<string, string[]>} */
@@ -53,11 +53,13 @@ const [player1Deck, player2Deck] = fs
 			let serializedPlayer1 = player1.toString();
 			let serializedPlayer2 = player2.toString();
 			if (memoizedRounds.has(serializedPlayer1) && memoizedRounds.get(serializedPlayer1).includes(serializedPlayer2)) {
-				return {winner: 1, hand: player1};
+				return 1;
 			}
 
 			// Memoize this hand configuration
-			if (!memoizedRounds.has(serializedPlayer1)) memoizedRounds.set(serializedPlayer1, []);
+			if (!memoizedRounds.has(serializedPlayer1)) {
+				memoizedRounds.set(serializedPlayer1, []);
+			}
 			memoizedRounds.get(serializedPlayer1).push(serializedPlayer2);
 
 			// Play the round
@@ -69,13 +71,9 @@ const [player1Deck, player2Deck] = fs
 			if ((player1.length >= card1) && (player2.length >= card2)) {
 				let subhand1 = player1.slice(0, card1);
 				let subhand2 = player2.slice(0, card2);
-				winner = playRecursiveCombat(subhand1, subhand2).winner;
+				winner = playRecursiveCombat(subhand1, subhand2);
 			} else {
-				if (card1 > card2) {
-					winner = 1;
-				} else {
-					winner = 2;
-				}
+				winner = (card1 > card2) ? 1 : 2;
 			}
 	
 			if (winner === 1) {
@@ -85,15 +83,14 @@ const [player1Deck, player2Deck] = fs
 			}
 		}
 
-		return {
-			winner: (player1.length > 0) ? 1 : 2,
-			hand: (player1.length > 0) ? player1 : player2
-		};
+		return (player1.length > 0) ? 1 : 2;
 	}
 
-	let {hand} = playRecursiveCombat([...player1], [...player2]);
-	let score = hand.reduce((sum, card, index) => {
-		let cardScore = card * (hand.length - index);
+	let winner = playRecursiveCombat(player1, player2);
+	let winningHand = (winner === 1) ? player1 : player2;
+
+	let score = winningHand.reduce((sum, card, index) => {
+		let cardScore = card * (winningHand.length - index);
 		return sum + cardScore;
 	}, 0);
 
