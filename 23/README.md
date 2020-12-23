@@ -111,4 +111,31 @@ To make this program faster, I not only needed the efficient extractions and rei
 
 ## The Linked List/Map Combo
 
-## Debuggability and a Clean Slate
+If you have a bunch of data and you want efficient lookups, you turn to an object or a [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), which have **constant time (`O(1)`) lookups**. [On a previous day](/15#maps-over-objects), I learned that `Map`s will perform better than objects in cases where you anticipate many frequent updates, so I've opted for a `Map` again.
+
+As I was creating each cup node in the circular linked list, I made sure to store that node in my `Map` as well — the keys were the cup's label, and the values were the nodes themselves.
+
+```js
+/** @type {Map<number, Cup>} */
+let cups = new Map();
+
+/** @type {Cup} */
+let previousCup = null;
+for (let i = 0; i < NUM_CUPS; i++) {
+	/** @type {Cup} */
+	let newCup = {
+		label: (i < input.length) ? input[i] : i + 1,
+		next: null
+	};
+
+	cups.set(newCup.label, newCup);
+
+	if (previousCup) previousCup.next = newCup;
+	previousCup = newCup;
+}
+
+// Make it circular
+previousCup.next = cups.get(input[0]);
+```
+
+This meant that anytime we need to **find** a cup, such as when we're finding where to extract or reinsert nodes, we can call `cups.get()`, and get the relevant cup node in **constant runtime**. Because we're still using the linked list approach at the same time, we can still perform extractions and reinsertions efficiently using references (also **constant runtime**). This hybrid linked list/map approach really gives us the best of both worlds when it comes to insertion/extraction and lookups.
