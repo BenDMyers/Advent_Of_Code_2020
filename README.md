@@ -51,6 +51,6 @@ node 07
 | Day 20 | |
 | Day 21 | |
 | [Day 22](/22/) | Recursive card games |
-| Day 23 | |
+| [Day 23](/23/) | Circular linked lists attached to `Map`s |
 | Day 24 | |
 | Day 25 | |
