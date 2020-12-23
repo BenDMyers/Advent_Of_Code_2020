@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 // const input = [3, 8, 9, 1, 2, 5, 4, 6, 7]; // Sample input
 const input = [3, 1, 5, 6, 7, 9, 8, 2, 4]; // Actual input
 // const NUM_CUPS = input.length;
