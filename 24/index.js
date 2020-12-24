@@ -3,19 +3,11 @@ const input = fs
 	.readFileSync(`${__dirname}/.input`, 'utf-8')
 	.split('\n');
 
-let getFrequencies = str => {
-	return str.split('').reduce((total, letter) => {
-		total[letter] ? total[letter]++ : total[letter] = 1;
-		return total;
-	}, {});
-};
-
 /** @type {Set<String>} */
 let flippedTiles = new Set();
 
 // Part 1
 (function part1() {
-
 	input.forEach((directions) => {
 		let verticalOffset = 0;
 		let horizontalOffset = 0;
@@ -72,15 +64,15 @@ let flippedTiles = new Set();
 
 // Part 2
 (function part2() {
-	// flippedTiles = new Set(['0,0', '1,0', '1.5,0.5', '2,0']);
 	/**
-	 * Gets all of the tile's neighbors, split up into flipped and unflipped tiles
+	 * Get the count of the tile's flipped neighbors
 	 * @param {string} coords coordinate string of the format "<horiz_offset>,<vert_offset>"
-	 * @returns {{flipped: string[], unflipped: string[]}}
+	 * @returns {number}
 	 */
-	function getNeighbors(coords) {
+	function getFlippedNeighbors(coords) {
 		// console.log(coords)
 		let [horizontalOffset, verticalOffset] = coords.split(',').map(x => Number(x));
+		let flippedNeighbors = 0;
 
 		let east = `${horizontalOffset + 1},${verticalOffset}`;
 		let northeast = `${horizontalOffset + 0.5},${verticalOffset + 0.5}`;
@@ -89,49 +81,49 @@ let flippedTiles = new Set();
 		let southwest = `${horizontalOffset - 0.5},${verticalOffset - 0.5}`;
 		let west = `${horizontalOffset - 1},${verticalOffset}`;
 
-		let flipped = [];
-		let unflipped = [];
+		if (flippedTiles.has(east)) flippedNeighbors++;
+		if (flippedTiles.has(northeast)) flippedNeighbors++;
+		if (flippedTiles.has(northwest)) flippedNeighbors++;
+		if (flippedTiles.has(southeast)) flippedNeighbors++;
+		if (flippedTiles.has(southwest)) flippedNeighbors++;
+		if (flippedTiles.has(west)) flippedNeighbors++;
 
-		(flippedTiles.has(east) ? flipped : unflipped).push(east);
-		(flippedTiles.has(northeast) ? flipped : unflipped).push(northeast);
-		(flippedTiles.has(northwest) ? flipped : unflipped).push(northwest);
-		(flippedTiles.has(southeast) ? flipped : unflipped).push(southeast);
-		(flippedTiles.has(southwest) ? flipped : unflipped).push(southwest);
-		(flippedTiles.has(west) ? flipped : unflipped).push(west);
-
-		return {flipped, unflipped};
+		return flippedNeighbors;
 	}
 
-	// console.log(getNeighbors('1,0'))
+	for (let i = 1; i <= 100; i++) {
+		let westernBounds = 0;
+		let easternBounds = 0;
+		let northernBounds = 0;
+		let southernBounds = 0;
 
-	for (let i = 0; i < 100; i++) {
-		let carriedOverFlippedTiles = [];
-		let allUnflippedNeighbors = {};
-
-		flippedTiles.forEach(flippedTile => {
-			// console.log(flippedTile,)
-			let neighbors = getNeighbors(flippedTile);
-
-			// Decide which flipped tiles should NOT get flipped back over
-			if (neighbors.flipped.length === 0 || neighbors.flipped.length > 2) {
-				carriedOverFlippedTiles.push(flippedTile);
-			}
-
-			// Keep track of how many FLIPPED tiles an UNFLIPPED tile is a neighbor of
-			neighbors.unflipped.forEach(unflippedTile => {
-				allUnflippedNeighbors[unflippedTile] = (allUnflippedNeighbors[unflippedTile] || 0) + 1;
-			});
+		flippedTiles.forEach(coords => {
+			let [horizontalOffset, verticalOffset] = coords.split(',').map(x => Number(x));
+			westernBounds = Math.min(horizontalOffset, westernBounds);
+			easternBounds = Math.max(horizontalOffset, easternBounds);
+			southernBounds = Math.min(verticalOffset, southernBounds);
+			northernBounds = Math.max(verticalOffset, northernBounds);
 		});
 
-		let newlyFlippedTiles = [];
-		for (coords in allUnflippedNeighbors) {
-			if (allUnflippedNeighbors[coords] === 2) {
-				newlyFlippedTiles.push(coords);
+		let nextDay = new Set();
+
+		for (let horiz = westernBounds - 1; horiz <= easternBounds + 1; horiz += 0.5) {
+			for (let vert = southernBounds - 1; vert <= northernBounds + 1; vert += 0.5) {
+				let isFlipped = flippedTiles.has(`${horiz},${vert}`);
+				let flippedNeighbors = getFlippedNeighbors(`${horiz},${vert}`);
+
+				if (isFlipped && (flippedNeighbors === 0 || flippedNeighbors > 2)) {
+					nextDay.add(`${horiz},${vert}`);
+				}
+
+				if (!isFlipped && flippedNeighbors === 2) {
+					nextDay.add(`${horiz},${vert}`);
+				}
 			}
 		}
-		console.log(carriedOverFlippedTiles)
-		flippedTiles = new Set([...carriedOverFlippedTiles, ...newlyFlippedTiles]);
-		// console.log(i + 1, flippedTiles.size)
+
+		flippedTiles = nextDay;
+		console.log(i, nextDay.size);
 	}
 
 	console.log(flippedTiles.size);
