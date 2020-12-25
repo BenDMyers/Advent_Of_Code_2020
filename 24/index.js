@@ -63,6 +63,10 @@ let flippedTiles = new Set();
 
 
 // Part 2
+
+/*****************************************
+ * Work in progress, not yet functional!
+ ****************************************/
 (function part2() {
 	/**
 	 * Get the count of the tile's flipped neighbors
