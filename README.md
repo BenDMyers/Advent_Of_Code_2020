@@ -49,8 +49,8 @@ node 07
 | [Day 18](/18/) | Evaluating expressions with custom operator precedences |
 | [Day 19](/19/) | |
 | Day 20 | |
-| Day 21 | |
+| [Day 21](/21/) | Logic puzzles with `Set` |
 | [Day 22](/22/) | Recursive card games |
 | [Day 23](/23/) | Circular linked lists attached to `Map`s |
 | Day 24 | |
-| Day 25 | |
+| [Day 25](/25/) | |
