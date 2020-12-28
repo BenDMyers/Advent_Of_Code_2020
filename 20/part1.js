@@ -30,23 +30,21 @@ function getEdges(grid) {
 }
 
 /**
- * Determines if and how two map tiles can connect
- * @param {Tile} gridA a map tile
- * @param {Tile} gridB another map tile
- * @returns {'top'|'bottom'|'left'|'right'|false} the edge of A that connects to B
+ * Determines whether two map tiles can connect
+ * @param {Tile} tileA a map tile
+ * @param {Tile} tileB another map tile
+ * @returns {Boolean} whether Tiles A and B are neighbors
  */
-function compareTileEdges(gridA, gridB) {
-	console.log({gridA, gridB})
-	let orientations = ['top', 'bottom', 'left', 'right'];
-	let aEdges = getEdges(gridA);
-	let bEdges = getEdges(gridB);
+function compareTileEdges(tileA, tileB) {
+	let aEdges = getEdges(tileA);
+	let bEdges = getEdges(tileB);
 	for (let a = 0; a < aEdges.length; a++) {
 		let aEdge = aEdges[a];
 		for (let b = 0; b < bEdges.length; b++) {
 			let bEdge = bEdges[b];
 			let bEdgeReversed = bEdge.split('').reverse().join('');
 			if (aEdge === bEdge || aEdge === bEdgeReversed) {
-				return orientations[a];
+				return true;
 			}
 		}
 	}
